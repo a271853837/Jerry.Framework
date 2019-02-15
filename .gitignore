@@ -5,6 +5,7 @@ ehthumbs.db
 # Folder config file
 Desktop.ini
 
+packages/
 .vs/
 [Bb]in/
 [Oo]bj/
