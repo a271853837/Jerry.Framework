@@ -1,0 +1,6 @@
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\b\Jerry.System\bin\Debug\Log\log4net.config
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\b\Jerry.System\bin\Debug\Jerry.System.dll
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\i\Jerry.System\Debug\Jerry.System.csprojAssemblyReference.cache
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\i\Jerry.System\Debug\Jerry.System.csproj.CoreCompileInputs.cache
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\i\Jerry.System\Debug\Jerry.System.csproj.CopyComplete
+H:\李传禄\Jerry.Framework\.vs\Jerry.Framework\lut\0\i\Jerry.System\Debug\Jerry.System.dll
