@@ -8,6 +8,10 @@ namespace Jerry.System.Cache
 {
     public interface ICache
     {
+
+        object this[string key] { get;set; }
+
+        object Get(string key);
         /// <summary>
         /// 向Cache中添加项
         /// </summary>
