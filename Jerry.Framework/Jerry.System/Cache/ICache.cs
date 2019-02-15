@@ -8,12 +8,17 @@ namespace Jerry.System.Cache
 {
     public interface ICache
     {
+
+        object this[string key] { get;set; }
+
+        object Get(object key);
+
         /// <summary>
         /// 向Cache中添加项
         /// </summary>
         /// <param name="key">被Cache对象的Key</param>
         /// <param name="value">被Cache的对象</param>
-        void Add(object key, object value);
+        void Add(string key, object value);
 
         /// <summary>
         /// 向Cache中添加项
