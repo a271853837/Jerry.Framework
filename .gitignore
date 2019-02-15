@@ -4,6 +4,9 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+/Jerry.Framework/.vs
+[Bb]in/
+[Oo]bj/
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
@@ -13,6 +16,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.suo
 
 # Windows shortcuts
 *.lnk
