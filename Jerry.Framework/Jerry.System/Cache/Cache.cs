@@ -10,6 +10,7 @@ namespace Jerry.System.Cache
     {
         public void Add(object key, object value)
         {
+
             throw new NotImplementedException();
         }
 

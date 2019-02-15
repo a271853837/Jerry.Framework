@@ -4,7 +4,8 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
-/Jerry.Framework/.vs
+
+.vs/
 [Bb]in/
 [Oo]bj/
 
