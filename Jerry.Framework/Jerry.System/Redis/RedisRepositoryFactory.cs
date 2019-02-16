@@ -8,9 +8,9 @@ namespace Jerry.System.Redis
 {
     public class RedisRepositoryFactory
     {
-        public static RedisRepository CreateRedisRepository()
+        public static RedisRepository CreateRedisRepository(int dbnum =-1)
         {
-            return new RedisRepository();
+            return new RedisRepository(dbnum);
         }
     }
 }

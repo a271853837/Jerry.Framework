@@ -10,14 +10,13 @@ namespace Jerry.System.Redis
 {
     public class BaseRedisRepository
     {
-        private static ConnectionMultiplexer db = null;
+        private static ConnectionMultiplexer connection = null;
         private int DbNumber { get; }
 
         public BaseRedisRepository(int dbnum = -1)
         {
             DbNumber = dbnum;
-            db = RedisManager.Instance;
-
+            connection = RedisManager.Instance;
         }
 
 
@@ -25,7 +24,7 @@ namespace Jerry.System.Redis
         {
             get
             {
-                return db.GetDatabase(DbNumber);
+                return connection.GetDatabase(DbNumber);
             }
         }
 

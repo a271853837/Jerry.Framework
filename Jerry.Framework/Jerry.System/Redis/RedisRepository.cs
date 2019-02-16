@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jerry.System.Log;
 using StackExchange.Redis;
 
 namespace Jerry.System.Redis
 {
-    public class RedisRepository : BaseRedisRepository, IRedisCaching
+    public class RedisRepository : BaseRedisRepository
     {
 
+        ILog log = LogManager.GetLogger(typeof(RedisRepository));
         public RedisRepository(int dbnum = -1) : base(dbnum)
         {
 
@@ -276,6 +278,60 @@ namespace Jerry.System.Redis
         #endregion
         #endregion
 
-        
+        #region 发布订阅
+        /// <summary>
+        /// 发布
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="channel"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public long Publish<T>(string channel,T msg)
+        {
+            ISubscriber subscriber= Db.Multiplexer.GetSubscriber();
+            return subscriber.Publish(channel, ConvertJson(msg));
+        }
+
+        /// <summary>
+        /// 取消发布
+        /// </summary>
+        /// <param name="channel"></param>
+        public void Unsubscribe(string channel)
+        {
+            ISubscriber sub = Db.Multiplexer.GetSubscriber();
+            sub.Unsubscribe(channel);
+        }
+
+        /// <summary>
+        /// 订阅 发布订阅模式 首先要有订阅方，再发布
+        /// </summary>
+        /// <param name="subChannel"></param>
+        /// <param name="handler"></param>
+        public void Subscribe(string subChannel, Action<RedisChannel, RedisValue> handler = null)
+        {
+            try
+            {
+                ISubscriber sub = Db.Multiplexer.GetSubscriber();
+                sub.Subscribe(subChannel, (channel, message) =>
+                {
+                    if (handler == null)
+                    {
+                        log.Info(subChannel + " 订阅收到消息：" + message);
+                    }
+                    else
+                    {
+                        handler(channel, message);
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                log.Error(e);
+                throw e;
+            }
+            
+        }
+
+        #endregion
     }
 }

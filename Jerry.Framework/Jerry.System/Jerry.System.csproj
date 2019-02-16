@@ -113,7 +113,6 @@
     <Compile Include="MongoDb\MongoRepository.cs" />
     <Compile Include="MongoDb\MongoRepositoryFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Redis\IRedisCaching.cs" />
     <Compile Include="Redis\RedisConfig.cs" />
     <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="Redis\BaseRedisRepository.cs" />
