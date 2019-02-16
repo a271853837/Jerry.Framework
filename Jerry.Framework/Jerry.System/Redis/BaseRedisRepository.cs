@@ -12,16 +12,12 @@ namespace Jerry.System.Redis
     {
         private static ConnectionMultiplexer db = null;
         private int DbNumber { get; }
-        public BaseRedisRepository() 
-        {
-            db = RedisManager.Instance;
-        }
 
-        public BaseRedisRepository(int dbnum)
+        public BaseRedisRepository(int dbnum = -1)
         {
             DbNumber = dbnum;
             db = RedisManager.Instance;
-            
+
         }
 
 
@@ -29,18 +25,39 @@ namespace Jerry.System.Redis
         {
             get
             {
-                return db.GetDatabase(DbNumber); 
+                return db.GetDatabase(DbNumber);
             }
         }
 
-        public string ConvertJson<T>(T val)
+        protected string ConvertJson<T>(T val)
         {
             return val is string ? val.ToString() : JsonConvert.SerializeObject(val);
         }
 
-        public T ConvertObj<T>(RedisValue val)
+        protected T ConvertObj<T>(RedisValue val)
         {
             return JsonConvert.DeserializeObject<T>(val);
+        }
+
+        protected List<T> ConvetList<T>(RedisValue[] values)
+        {
+            List<T> result = new List<T>();
+            foreach (var item in values)
+            {
+                var model = ConvertObj<T>(item);
+                result.Add(model);
+            }
+            return result;
+        }
+
+        protected RedisKey[] ConvertRedisKeys(List<string> redisKeys)
+        {
+            return redisKeys.Select(redisKey => (RedisKey)redisKey).ToArray();
+        }
+
+        protected RedisValue[] ConvertRedisValues(List<string> redisValues)
+        {
+            return redisValues.Select(redisKey => (RedisValue)redisKey).ToArray();
         }
     }
 }
