@@ -62,7 +62,7 @@ namespace Jerry.System.Redis
         /// <returns></returns>
         public long String(string key)
         {
-            
+
             return Db.StringLength(key);
         }
         /// <summary>
@@ -175,9 +175,9 @@ namespace Jerry.System.Redis
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void ListLeftPush<T>(string key,T value)
+        public void ListLeftPush<T>(string key, T value)
         {
-             Db.ListLeftPush(key, ConvertJson(value));
+            Db.ListLeftPush(key, ConvertJson(value));
         }
 
         /// <summary>
@@ -207,12 +207,12 @@ namespace Jerry.System.Redis
 
         #region SortedSet
         #region 同步
-        public bool SortedSetAdd<T>(string key,T value, double score)
+        public bool SortedSetAdd<T>(string key, T value, double score)
         {
             return Db.SortedSetAdd(key, ConvertJson(value), score);
         }
 
-        public bool SortedSetRemove<T>(string key ,T value)
+        public bool SortedSetRemove<T>(string key, T value)
         {
             return Db.SortedSetRemove(key, ConvertJson(value));
         }
@@ -232,35 +232,81 @@ namespace Jerry.System.Redis
         #endregion
         #endregion
 
+        #region Set
+        #region 同步
+        public bool SetAdd<T>(string key, T t)
+        {
+            return Db.SetAdd(key, ConvertJson(t));
+        }
+
+        public long SetAdd(string key, List<string> list)
+        {
+            return Db.SetAdd(key, list.Select(c => (RedisValue)c).ToArray());
+        }
+        public bool SetRemove<T>(string key,T t)
+        {
+            return Db.SetRemove(key, ConvertJson(t));
+        }
+        public long SetRemove(string key,List<string> list)
+        {
+            return Db.SetRemove(key, list.Select(c => (RedisValue)c).ToArray());
+        }
+
+        public long SetLength(string key)
+        {
+            return Db.SetLength(key);
+        }
+
+        public List<T> SetScan<T>(string key)
+        {
+            var values= Db.SetScan(key);
+            return ConvetList<T>(values.ToArray());
+        }
+
+        public List<T> SetCombine<T>(string key1,string key2, SetOperation opt)
+        {
+            var values = Db.SetCombine(opt, key1, key2);
+            return ConvetList<T>(values.ToArray());
+        }
+
+        public List<T> SetMembers<T>(string key)
+        {
+            var values= Db.SetMembers(key);
+            return ConvetList<T>(values.ToArray());
+        }
+
+        #endregion
+        #endregion
+
         #region Hash
         #region 同步
-        public bool HashExists(string key ,string dataKey)
+        public bool HashExists(string key, string dataKey)
         {
             return Db.HashExists(key, dataKey);
         }
 
-        public bool HashSet<T>(string key,string dataKey,T t)
+        public bool HashSet<T>(string key, string dataKey, T t)
         {
             return Db.HashSet(key, dataKey, ConvertJson(t));
         }
 
-        public bool HashDelete(string key,string dataKey)
+        public bool HashDelete(string key, string dataKey)
         {
             return Db.HashDelete(key, dataKey);
         }
 
-        public long HashDelete(string key,List<string> dataKeys)
+        public long HashDelete(string key, List<string> dataKeys)
         {
             return Db.HashDelete(key, ConvertRedisValues(dataKeys));
         }
 
-        public T HashGet<T>(string key,string dataKey)
+        public T HashGet<T>(string key, string dataKey)
         {
             string value = Db.HashGet(key, dataKey);
             return ConvertObj<T>(value);
         }
 
-        public double HashIncrement(string key,string dataKey,double val = 1)
+        public double HashIncrement(string key, string dataKey, double val = 1)
         {
             return Db.HashIncrement(key, dataKey, val);
         }
@@ -286,9 +332,9 @@ namespace Jerry.System.Redis
         /// <param name="channel"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public long Publish<T>(string channel,T msg)
+        public long Publish<T>(string channel, T msg)
         {
-            ISubscriber subscriber= Db.Multiplexer.GetSubscriber();
+            ISubscriber subscriber = Db.Multiplexer.GetSubscriber();
             return subscriber.Publish(channel, ConvertJson(msg));
         }
 
@@ -329,7 +375,7 @@ namespace Jerry.System.Redis
                 log.Error(e);
                 throw e;
             }
-            
+
         }
 
         #endregion

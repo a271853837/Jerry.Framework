@@ -16,7 +16,7 @@ namespace Jerry.Test
 
         public RedisTest()
         {
-            redis = RedisRepositoryFactory.CreateRedisRepository(4);
+            redis = RedisRepositoryFactory.CreateRedisRepository(1);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace Jerry.Test
         [Test]
         public void HashTest()
         {
-            RedisModel p = CreateModel();
+            RedisModel p = CreateModel("a1");
 
             //redis.HashSet<RedisModel>("person", "a1", p);
             //redis.HashSet<RedisModel>("person", "a2", p);
@@ -52,9 +52,9 @@ namespace Jerry.Test
             Assert.IsTrue(redis.KeyExists("aaa"));
         }
 
-        private RedisModel CreateModel()
+        private RedisModel CreateModel(string name)
         {
-            RedisModel p = new RedisModel()
+            RedisModel p = new RedisModel(name)
             {
                 name = "testName",
                 age = 1,
@@ -69,7 +69,7 @@ namespace Jerry.Test
         [Test]
         public void Publish()
         {
-            RedisModel p = CreateModel();
+            RedisModel p = CreateModel("a2");
             redis.Subscribe("channel1", (channel, message) =>
             {
                 Console.WriteLine(channel.ToString() + " 订阅收到消息：" + message);
@@ -78,20 +78,33 @@ namespace Jerry.Test
         }
 
         [Test]
-        public void Subscribe()
+        public void SetCombine()
         {
-            //redis.Subscribe("channel1", (channel, message) =>
-            //{
-            //    Console.WriteLine(channel + " 订阅收到消息：" + message);
-            //});
+            //RedisModel p3 = CreateModel("a3");
+            //redis.SetAdd("setkey", p3);
+            //RedisModel p4 = CreateModel("a4");
+            //redis.SetAdd("setkey", p4);
+            redis.SetAdd("setkey1", "1");
+            redis.SetAdd("setkey1", "2");
+            redis.SetAdd("setkey1", "3");
+            redis.SetAdd("setKey1", CreateModel("123"));
+            var strings = redis.SetMembers<string>("setkey1");
 
-            redis.Subscribe("channel1");
+            redis.SetAdd("setkey2", "1");
+            var list = redis.SetCombine<string>("setkey1", "setkey2", SetOperation.Intersect);
+
+
         }
+
     }
 
 
     public class RedisModel
     {
+        public RedisModel(string name)
+        {
+            this.name = name;
+        }
         public string name { get; set; }
         public int age { get; set; }
         public DateTime birthday { get; set; }
