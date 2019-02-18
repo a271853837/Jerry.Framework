@@ -119,15 +119,18 @@
     <Compile Include="MongoDb\MongoRepository.cs" />
     <Compile Include="MongoDb\MongoRepositoryFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RabbitMq\IRabbitMqClient.cs" />
+    <Compile Include="RabbitMq\RabbitMqClient.cs" />
+    <Compile Include="RabbitMq\RabbitMqClientContext.cs" />
+    <Compile Include="RabbitMq\RabbitMqClientFactory.cs" />
+    <Compile Include="RabbitMq\RabbitMQConnection.cs" />
     <Compile Include="Redis\RedisConfig.cs" />
     <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="Redis\BaseRedisRepository.cs" />
     <Compile Include="Redis\RedisRepositoryFactory.cs" />
     <Compile Include="Redis\RedisRepository.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RabbitMq\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Log\log4net.config">
