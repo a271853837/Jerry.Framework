@@ -16,21 +16,20 @@ namespace Jerry.System.RabbitMq
         private ILog log = LogManager.GetLogger(typeof(RabbitMqClient));
         public RabbitMqClientContext Context { get; set; }
 
-
         private static IRabbitMqClient _client;
 
         public static IRabbitMqClient Instance
         {
             get
             {
-                if (_client==null)
+                if (_client == null)
                 {
                     RabbitMqClientFactory.CreateRabbitMqClientInstance();
                 }
 
                 return _client;
             }
-             set { _client = value; }
+            set { _client = value; }
         }
 
         private ActionEvent _actionMessage;
@@ -39,12 +38,12 @@ namespace Jerry.System.RabbitMq
         {
             add
             {
-                if (_actionMessage==null)
+                if (_actionMessage == null)
                     _actionMessage += value;
             }
             remove
             {
-                if (_actionMessage!=null)
+                if (_actionMessage != null)
                     _actionMessage -= value;
             }
         }
@@ -52,11 +51,9 @@ namespace Jerry.System.RabbitMq
 
         public void PublishMessage(string message, string exChange, string queue)
         {
-            Context.SendConnection = RabbitMQConnection.Connection;
-            using (Context.SendConnection)
+            using (Context.SendConnection = RabbitMQConnection.Connection)
             {
-                Context.SendChannel = RabbitMQConnection.CreateModel(Context.SendConnection);
-                using (Context.SendChannel)
+                using (Context.SendChannel = Context.SendConnection.CreateModel())
                 {
                     Context.SendChannel.QueueDeclare(queue, true, false, false, null);
                     var properties = Context.SendChannel.CreateBasicProperties();
@@ -70,20 +67,41 @@ namespace Jerry.System.RabbitMq
 
         public void HandleMessage(string queue)
         {
-            Context.ReceiveConnection = RabbitMQConnection.Connection;
-            //using (Context.ReceiveConnection)
+
+            using (Context.ReceiveConnection = RabbitMQConnection.Connection)
             {
-                Context.ReceiveChannel = RabbitMQConnection.CreateModel(Context.ReceiveConnection);
-                //using (Context.ReceiveChannel)
+                Context.ReceiveConnection.ConnectionShutdown += (o, e) =>
+                {
+                    log.Info("connection shutdown:" + e.ReplyText);
+                };
+                using (Context.ReceiveChannel = Context.ReceiveConnection.CreateModel())
                 {
                     bool durable = true;
                     Context.ReceiveChannel.QueueDeclare(queue, durable, false, false, null);
                     var consumer = new EventingBasicConsumer(Context.ReceiveChannel); //创建事件驱动的消费者类型
-                    consumer.Received += Consumer_Received; ;
-                    Context.ReceiveChannel.BasicQos(0, 1, false);
                     Context.ReceiveChannel.BasicConsume(queue, false, consumer);
+                    consumer.Received += (sender, e) =>
+                        {
+                            try
+                            {
+                                if (_actionMessage != null)
+                                {
+                                    _actionMessage(e);
+                                }
+                            ((EventingBasicConsumer)sender).Model.BasicNack(e.DeliveryTag, false, true);
+                                //Context.ReceiveChannel.BasicAck(e.DeliveryTag, false);
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Error(ex);
+                                throw (ex);
+                            }
+                        };
+                    //Context.ReceiveChannel.BasicQos(0, 1, false);
+
                 }
             }
+
         }
 
         private void Consumer_Received(object sender, BasicDeliverEventArgs e)
@@ -91,10 +109,10 @@ namespace Jerry.System.RabbitMq
             try
             {
                 if (_actionMessage != null)
-                { 
+                {
                     _actionMessage(e);
                 }
-                var result= Encoding.UTF8.GetString(e.Body);
+                var result = Encoding.UTF8.GetString(e.Body);
                 Context.ReceiveChannel.BasicAck(e.DeliveryTag, false);
             }
             catch (Exception ex)
