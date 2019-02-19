@@ -60,7 +60,7 @@ namespace Jerry.System.RabbitMq
                     //properties.DeliveryMode = 2; //表示持久化消息
                     properties.Persistent = true;
                     var body = Encoding.UTF8.GetBytes(message);
-                    Context.SendChannel.BasicPublish(exChange, queue, properties, body);
+                    Context.SendChannel.BasicPublish("", queue, properties, body);
                 }
             }
         }
@@ -70,26 +70,25 @@ namespace Jerry.System.RabbitMq
 
             using (Context.ReceiveConnection = RabbitMQConnection.Connection)
             {
-                Context.ReceiveConnection.ConnectionShutdown += (o, e) =>
-                {
-                    log.Info("connection shutdown:" + e.ReplyText);
-                };
+                //Context.ReceiveConnection.ConnectionShutdown += (o, e) =>
+                //{
+                //    log.Info("connection shutdown:" + e.ReplyText);
+                //};
                 using (Context.ReceiveChannel = Context.ReceiveConnection.CreateModel())
                 {
-                    bool durable = true;
+                    bool durable = false;
                     Context.ReceiveChannel.QueueDeclare(queue, durable, false, false, null);
                     var consumer = new EventingBasicConsumer(Context.ReceiveChannel); //创建事件驱动的消费者类型
-                    Context.ReceiveChannel.BasicConsume(queue, false, consumer);
-                    consumer.Received += (sender, e) =>
+                    consumer.Received += (model, ea) =>
                         {
                             try
                             {
                                 if (_actionMessage != null)
                                 {
-                                    _actionMessage(e);
+                                    _actionMessage(ea);
                                 }
-                            ((EventingBasicConsumer)sender).Model.BasicNack(e.DeliveryTag, false, true);
-                                //Context.ReceiveChannel.BasicAck(e.DeliveryTag, false);
+                            //((EventingBasicConsumer)sender).Model.BasicNack(e.DeliveryTag, false, true);
+                                Context.ReceiveChannel.BasicAck(ea.DeliveryTag, false);
                             }
                             catch (Exception ex)
                             {
@@ -97,7 +96,8 @@ namespace Jerry.System.RabbitMq
                                 throw (ex);
                             }
                         };
-                    //Context.ReceiveChannel.BasicQos(0, 1, false);
+                    Context.ReceiveChannel.BasicQos(0, 1, false);
+                    Context.ReceiveChannel.BasicConsume(queue, false, consumer);
 
                 }
             }

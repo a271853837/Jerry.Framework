@@ -23,7 +23,7 @@ namespace Jerry.Test
 
             try
             {
-                RabbitMqClient.Instance.PublishMessage("已经发送邮件", "amq.direct", "queue1");
+                //RabbitMqClient.Instance.PublishMessage("已经发送邮件12", "amq.direct", "queue1");
                 RabbitMqClient.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
                 RabbitMqClient.Instance.HandleMessage("queue1");
             }
