@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Jerry.System.Log;
 using RabbitMQ.Client;
@@ -11,27 +12,10 @@ namespace Jerry.System.RabbitMq
 {
     public delegate void ActionEvent(BasicDeliverEventArgs result);
 
-    public class RabbitMqClient : IRabbitMqClient
+    public class RabbitMqClient : RabbitMqContext, IRabbitMqClient
     {
         private ILog log = LogManager.GetLogger(typeof(RabbitMqClient));
-        public RabbitMqClientContext Context { get; set; }
-
-        private static IRabbitMqClient _client;
-
-        public static IRabbitMqClient Instance
-        {
-            get
-            {
-                if (_client == null)
-                {
-                    RabbitMqClientFactory.CreateRabbitMqClientInstance();
-                }
-
-                return _client;
-            }
-            set { _client = value; }
-        }
-
+        
         private ActionEvent _actionMessage;
 
         public event ActionEvent ActionEventMessage
@@ -49,87 +33,52 @@ namespace Jerry.System.RabbitMq
         }
 
 
-        public void PublishMessage(string message, string exChange, string queue)
+        public void PublishMessage(string message)
         {
-            using (Context.SendConnection = RabbitMQConnection.Connection)
+            using (var model = _connection.CreateModel())
             {
-                using (Context.SendChannel = Context.SendConnection.CreateModel())
-                {
-                    Context.SendChannel.QueueDeclare(queue, true, false, false, null);
-                    var properties = Context.SendChannel.CreateBasicProperties();
-                    //properties.DeliveryMode = 2; //表示持久化消息
-                    properties.Persistent = true;
-                    var body = Encoding.UTF8.GetBytes(message);
-                    Context.SendChannel.BasicPublish("", queue, properties, body);
-                }
+                model.ExchangeDeclare(_exchangeName, _direct, true, false, null);
+                model.QueueDeclare(_queueName, true, false, false, null);
+                model.QueueBind(_queueName, _exchangeName, _routingKey);
+                var properties = model.CreateBasicProperties();
+                properties.Persistent = true;
+                var body = Encoding.UTF8.GetBytes(message);
+                model.BasicPublish(_exchangeName, _routingKey, properties, body);
             }
         }
-
-        public void HandleMessage(string queue)
+        public void Receive()
         {
-
-            using (Context.ReceiveConnection = RabbitMQConnection.Connection)
+            var channel = _connection.CreateModel();
             {
-                //Context.ReceiveConnection.ConnectionShutdown += (o, e) =>
-                //{
-                //    log.Info("connection shutdown:" + e.ReplyText);
-                //};
-                using (Context.ReceiveChannel = Context.ReceiveConnection.CreateModel())
-                {
-                    bool durable = false;
-                    Context.ReceiveChannel.QueueDeclare(queue, durable, false, false, null);
-                    var consumer = new EventingBasicConsumer(Context.ReceiveChannel); //创建事件驱动的消费者类型
-                    consumer.Received += (model, ea) =>
-                        {
-                            try
-                            {
-                                if (_actionMessage != null)
-                                {
-                                    _actionMessage(ea);
-                                }
-                            //((EventingBasicConsumer)sender).Model.BasicNack(e.DeliveryTag, false, true);
-                                Context.ReceiveChannel.BasicAck(ea.DeliveryTag, false);
-                            }
-                            catch (Exception ex)
-                            {
-                                log.Error(ex);
-                                throw (ex);
-                            }
-                        };
-                    Context.ReceiveChannel.BasicQos(0, 1, false);
-                    Context.ReceiveChannel.BasicConsume(queue, false, consumer);
-
-                }
+                channel.ExchangeDeclare(_exchangeName, _direct, durable: true, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: _queueName,
+                                      durable: true,
+                                      exclusive: false,
+                                      autoDelete: false,
+                                      arguments: null);
+                channel.QueueBind(_queueName, _exchangeName, _routingKey);
+                Receive(channel);
             }
 
         }
-
-        private void Consumer_Received(object sender, BasicDeliverEventArgs e)
+        public void Receive(IModel channel)
         {
-            try
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (ch, ea) =>
             {
-                if (_actionMessage != null)
+                var body = ea.Body;
+                var message = Encoding.UTF8.GetString(body);
+
+                var handler = _actionMessage;
+                if (handler != null)
                 {
-                    _actionMessage(e);
+                    _actionMessage(ea);
                 }
-                var result = Encoding.UTF8.GetString(e.Body);
-                Context.ReceiveChannel.BasicAck(e.DeliveryTag, false);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-                throw (ex);
-            }
-        }
 
-        public void Dispose()
-        {
-            if (Context.SendConnection == null) return;
-
-            if (Context.SendConnection.IsOpen)
-                Context.SendConnection.Close();
-
-            Context.SendConnection.Dispose();
+                channel.BasicAck(ea.DeliveryTag, false);
+            };
+            channel.BasicQos(0, 1, false);
+            channel.BasicConsume(_queueName, false, consumer);
         }
     }
 }

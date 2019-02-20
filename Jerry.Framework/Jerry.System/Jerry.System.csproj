@@ -121,9 +121,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RabbitMq\IRabbitMqClient.cs" />
     <Compile Include="RabbitMq\RabbitMqClient.cs" />
-    <Compile Include="RabbitMq\RabbitMqClientContext.cs" />
     <Compile Include="RabbitMq\RabbitMqClientFactory.cs" />
-    <Compile Include="RabbitMq\RabbitMQConnection.cs" />
+    <Compile Include="RabbitMq\RabbitMqConnection.cs" />
+    <Compile Include="RabbitMq\RabbitMqContext.cs" />
     <Compile Include="Redis\RedisConfig.cs" />
     <Compile Include="Redis\RedisManager.cs" />
     <Compile Include="Redis\BaseRedisRepository.cs" />

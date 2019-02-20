@@ -7,12 +7,7 @@ namespace Jerry.System.RabbitMq
     {
         public static IRabbitMqClient CreateRabbitMqClientInstance()
         {
-            var rabbitMqClientContext = new RabbitMqClientContext();
-            RabbitMqClient.Instance = new RabbitMqClient
-            {
-                Context = rabbitMqClientContext
-            };
-            return RabbitMqClient.Instance;
+            return new RabbitMqClient();
         }
 
 

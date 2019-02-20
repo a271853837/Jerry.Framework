@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Jerry.System.Log;
 using Jerry.System.RabbitMq;
@@ -23,9 +24,12 @@ namespace Jerry.Test
 
             try
             {
-                //RabbitMqClient.Instance.PublishMessage("已经发送邮件12", "amq.direct", "queue1");
-                RabbitMqClient.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
-                RabbitMqClient.Instance.HandleMessage("queue1");
+                for (int i = 0; i < 100; i++)
+                {
+                    RabbitMqContext.Instance.PublishMessage(i + "号消息");
+                }
+                RabbitMqContext.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
+                RabbitMqContext.Instance.Receive();
             }
             catch (Exception e)
             {
@@ -37,14 +41,15 @@ namespace Jerry.Test
         [Test]
         public void HandleMessage()
         {
-            RabbitMqClient.Instance.HandleMessage("queue1");
             RabbitMqClient.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
+            RabbitMqClient.Instance.Receive();
+
         }
 
         private void Instance_ActionEventMessage(BasicDeliverEventArgs result)
         {
             var message = Encoding.UTF8.GetString(result.Body);
-            log.Info(message);
+            log.Info("接受到消息："+message);
         }
     }
 }

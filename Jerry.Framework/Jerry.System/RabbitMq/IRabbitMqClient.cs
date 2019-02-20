@@ -8,12 +8,11 @@ namespace Jerry.System.RabbitMq
 {
     public interface IRabbitMqClient : IDisposable
     {
-        RabbitMqClientContext Context { get; set; }
 
         event ActionEvent ActionEventMessage;
 
-        void PublishMessage(string message, string exChange, string queue);
+        void PublishMessage(string message);
 
-        void HandleMessage(string queue);
+        void Receive();
     }
 }

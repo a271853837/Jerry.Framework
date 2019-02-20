@@ -7,25 +7,27 @@ using RabbitMQ.Client;
 
 namespace Jerry.System.RabbitMq
 {
-    public class RabbitMQConnection
+    public class RabbitMqConnection
     {
         private static IConnection _conn;
         private static object obj = new object();
 
-        private RabbitMQConnection()
+        private RabbitMqConnection()
         {
 
         }
+
+        
 
         public static IConnection Connection
         {
             get
             {
                 ConnectionFactory factory = new ConnectionFactory();
-                factory.HostName = "localhost";
-                factory.Port = 5672;
-                factory.UserName = "admin";
-                factory.Password = "li83361658";
+                factory.HostName = RabbitMqContext._hostName;
+                factory.Port = RabbitMqContext._port;
+                factory.UserName = RabbitMqContext._userName;
+                factory.Password = RabbitMqContext._password;
                 factory.RequestedHeartbeat = 60;
                 factory.AutomaticRecoveryEnabled = true;
                 _conn = factory.CreateConnection();
