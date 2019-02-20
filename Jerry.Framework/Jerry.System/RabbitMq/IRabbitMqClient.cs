@@ -11,7 +11,7 @@ namespace Jerry.System.RabbitMq
 
         event ActionEvent ActionEventMessage;
 
-        void PublishMessage(string message);
+        void PublishMessage(RabbitMqMessage message);
 
         void Receive();
     }

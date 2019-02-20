@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Jerry.System.Log;
 using Jerry.System.RabbitMq;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -25,11 +26,12 @@ namespace Test
 
         }
 
-        private static void Instance_ActionEventMessage(BasicDeliverEventArgs result)
+        private static void Instance_ActionEventMessage(RabbitMqMessage message)
         {
-            var message = Encoding.UTF8.GetString(result.Body);
-            Console.WriteLine(" [x] Received {0}", message);
-            log.Info("接受到消息：" + message);
+            message.IsOperationOk = true;
+            message.ReceiveTime = DateTime.Now;
+            Console.WriteLine(" [x] Received {0}", message.Message);
+            log.Info("接受到消息：" + message.Message);
         }
 
     }

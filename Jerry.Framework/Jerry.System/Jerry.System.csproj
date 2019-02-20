@@ -120,6 +120,7 @@
     <Compile Include="MongoDb\MongoRepositoryFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RabbitMq\IRabbitMqClient.cs" />
+    <Compile Include="RabbitMq\RabbitMqMessage.cs" />
     <Compile Include="RabbitMq\RabbitMqClient.cs" />
     <Compile Include="RabbitMq\RabbitMqClientFactory.cs" />
     <Compile Include="RabbitMq\RabbitMqConnection.cs" />

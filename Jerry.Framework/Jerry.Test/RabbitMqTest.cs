@@ -26,10 +26,15 @@ namespace Jerry.Test
             {
                 for (int i = 0; i < 100; i++)
                 {
-                    RabbitMqContext.Instance.PublishMessage(i + "号消息");
+                    RabbitMqMessage message = new RabbitMqMessage()
+                    {
+                        Message = i + "号消息",
+                        IsOperationOk = false
+                    };
+                    RabbitMqContext.Instance.PublishMessage(message);
                 }
-                RabbitMqContext.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
-                RabbitMqContext.Instance.Receive();
+                //RabbitMqContext.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
+                //RabbitMqContext.Instance.Receive();
             }
             catch (Exception e)
             {
