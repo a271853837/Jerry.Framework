@@ -63,7 +63,7 @@ namespace Jerry.System.Log
             }
         }
 
-        public string Type { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Type { get; set; }
 
         public void Debug(object message)
         {

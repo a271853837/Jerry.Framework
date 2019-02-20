@@ -20,6 +20,17 @@ namespace Test
             //{
             //    RabbitMqClient.Instance.PublishMessage(i+"号消息", "jerry.direct", "queue1");
             //}
+
+            for (int i = 0; i < 100; i++)
+            {
+                RabbitMqMessage message = new RabbitMqMessage()
+                {
+                    Message = i + "号消息",
+                    IsOperationOk = false
+                };
+                RabbitMqContext.Instance.PublishMessage(message);
+            }
+
             RabbitMqContext.Instance.ActionEventMessage += Instance_ActionEventMessage;
             RabbitMqContext.Instance.Receive();
             Console.Read();

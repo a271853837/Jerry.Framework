@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Jerry.System.Log;
 using Jerry.System.RabbitMq;
 using NUnit.Framework;
-using RabbitMQ.Client.Events;
 
 namespace Jerry.Test
 {
@@ -41,20 +40,6 @@ namespace Jerry.Test
                 throw e;
             }
             
-        }
-
-        [Test]
-        public void HandleMessage()
-        {
-            RabbitMqClient.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
-            RabbitMqClient.Instance.Receive();
-
-        }
-
-        private void Instance_ActionEventMessage(BasicDeliverEventArgs result)
-        {
-            var message = Encoding.UTF8.GetString(result.Body);
-            log.Info("接受到消息："+message);
         }
     }
 }
