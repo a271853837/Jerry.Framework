@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region RabbitMQ安装
+//首先在命令行输入：rabbitmq-service stop，
+//接着输入rabbitmq-service remove，
+//再接着输入rabbitmq-service install，
+//接着输入rabbitmq-service start，
+//最后重新输入rabbitmq-plugins enable rabbitmq_management。
+#endregion
 using RabbitMQ.Client;
 
 namespace Jerry.System.RabbitMq
@@ -15,7 +17,7 @@ namespace Jerry.System.RabbitMq
         public static string _password = "li83361658";
         public static string _exchangeName = "exchange";
         public static string _queueName = "queue";
-        public static string _routingKey = "";
+        public static string _routingKey = "key";
         public static string _direct = "direct";
 
         private bool _disposed;
