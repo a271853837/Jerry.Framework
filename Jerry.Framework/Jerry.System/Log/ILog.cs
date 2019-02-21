@@ -22,8 +22,9 @@ namespace Jerry.System.Log
         /// 输出提示信息
         /// </summary>
         /// <param name="message">信息对象</param>
-        void Info(object message);
+        void Info(object obj);
 
+        void Info(string message);
         /// <summary>
         /// 输出警告信息
         /// </summary>

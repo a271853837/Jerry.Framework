@@ -17,14 +17,20 @@ namespace Jerry.System.RabbitMq
         public static string _password = "li83361658";
         public static string _exchangeName = "exchange";
         public static string _queueName = "queue";
-        public static string _routingKey = "";
+        public static string _routingKey = "key";
         public static string _direct = "direct";
 
         private bool _disposed;
         protected IConnection _connection;
         public RabbitMqContext()
         {
+            Connect();
+        }
+
+        public void Connect()
+        {
             _connection = RabbitMqConnection.Connection;
+            _disposed = false;
         }
 
         public void Dispose()

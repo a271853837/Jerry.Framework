@@ -12,6 +12,7 @@ namespace Jerry.System.RabbitMq
         public RabbitMqMessage()
         {
             SendTime = DateTime.Now;
+            IsOperationOk = false;
         }
 
         public RabbitMqMessage(string message)

@@ -27,19 +27,27 @@ namespace Jerry.Test
                 {
                     RabbitMqMessage message = new RabbitMqMessage()
                     {
-                        Message = i + "号消息",
-                        IsOperationOk = false
+                        Message = i + "号消息"
                     };
                     RabbitMqContext.Instance.PublishMessage(message);
                 }
-                //RabbitMqContext.Instance.ActionEventMessage += this.Instance_ActionEventMessage;
-                //RabbitMqContext.Instance.Receive();
+                //RabbitMqContext.Instance.Dispose();
+                //RabbitMqContext.Instance.Connect();
+                RabbitMqContext.Instance.ActionEventMessage += Instance_ActionEventMessage;
+                RabbitMqContext.Instance.Receive();
             }
             catch (Exception e)
             {
                 throw e;
             }
             
+        }
+
+        private void Instance_ActionEventMessage(RabbitMqMessage message)
+        {
+            message.IsOperationOk = true;
+            message.ReceiveTime = DateTime.Now;
+            log.Info(message);
         }
     }
 }

@@ -107,12 +107,17 @@ namespace Jerry.System.Log
             throw new NotImplementedException();
         }
 
-        public void Info(object message)
+        public void Info(object obj)
         {
             if (IsInfoEnabled)
             {
-                logger.Info(message);
+                logger.Info(obj);
             }
+        }
+
+        public void Info(string message)
+        {
+            logger.Info(message);
         }
 
         public void Info(string msgFormat, params object[] args)

@@ -14,5 +14,8 @@ namespace Jerry.System.RabbitMq
         void PublishMessage(RabbitMqMessage message);
 
         void Receive();
+
+
+        void Connect();
     }
 }

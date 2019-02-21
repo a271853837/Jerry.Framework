@@ -40,6 +40,10 @@ namespace Jerry.System.RabbitMq
             {
                 throw new Exception("消息为空");
             }
+            if (!IsConnected)
+            {
+                throw new Exception("RabbitMq消息队列未连接");
+            }
             using (var model = _connection.CreateModel())
             {
                 model.ExchangeDeclare(_exchangeName, _direct, true, false, null);
@@ -53,6 +57,10 @@ namespace Jerry.System.RabbitMq
         }
         public void Receive()
         {
+            if (!IsConnected)
+            {
+                throw new Exception("RabbitMq消息队列未连接");
+            }
             var channel = _connection.CreateModel();
             {
                 channel.ExchangeDeclare(_exchangeName, _direct, durable: true, autoDelete: false, arguments: null);
