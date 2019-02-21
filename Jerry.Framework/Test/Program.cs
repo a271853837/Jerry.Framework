@@ -16,20 +16,19 @@ namespace Test
         private static ILog log = LogManager.GetLogger(typeof(Program));
         static void Main(string[] args)
         {
-            for (int i = 0; i < 100; i++)
-            {
-                RabbitMqMessage message = new RabbitMqMessage()
-                {
-                    Message = i + "号消息",
-                    IsOperationOk = false
-                };
-                RabbitMqContext.Instance.PublishMessage(message);
-            }
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    RabbitMqMessage message = new RabbitMqMessage()
+            //    {
+            //        Message = i + "号消息",
+            //        IsOperationOk = false
+            //    };
+            //    RabbitMqContext.Instance.PublishMessage(message);
+            //}
 
             RabbitMqContext.Instance.ActionEventMessage += Instance_ActionEventMessage;
             RabbitMqContext.Instance.Receive();
             Console.Read();
-
         }
 
         private static void Instance_ActionEventMessage(RabbitMqMessage message)

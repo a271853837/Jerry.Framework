@@ -16,7 +16,7 @@ namespace Jerry.System.RabbitMq
     public class RabbitMqClient : RabbitMqContext, IRabbitMqClient
     {
         private ILog log = LogManager.GetLogger(typeof(RabbitMqClient));
-        
+
         private ActionEvent _actionMessage;
 
         public event ActionEvent ActionEventMessage
@@ -36,7 +36,7 @@ namespace Jerry.System.RabbitMq
 
         public void PublishMessage(RabbitMqMessage message)
         {
-            if (message==null)
+            if (message == null)
             {
                 throw new Exception("消息为空");
             }
@@ -68,10 +68,11 @@ namespace Jerry.System.RabbitMq
         }
         public void Receive(IModel channel)
         {
-            try
+
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (ch, ea) =>
             {
-                var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (ch, ea) =>
+                try
                 {
                     var obj = JsonConvert.DeserializeObject<RabbitMqMessage>(Encoding.UTF8.GetString(ea.Body));
                     if (_actionMessage != null)
@@ -87,16 +88,17 @@ namespace Jerry.System.RabbitMq
                         //未能消费此消息，重新放入队列头
                         channel.BasicReject(ea.DeliveryTag, true);
                     }
-                };
-                channel.BasicQos(0, 1, false);
-                channel.BasicConsume(_queueName, false, consumer);
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-                throw ex;
-            }
-            
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex);
+                    throw ex;
+                }
+            };
+            channel.BasicQos(0, 1, false);
+            channel.BasicConsume(_queueName, false, consumer);
+
+
         }
     }
 }
