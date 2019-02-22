@@ -16,19 +16,45 @@ namespace Test
         private static ILog log = LogManager.GetLogger(typeof(Program));
         static void Main(string[] args)
         {
-            for (int i = 0; i < 100; i++)
+
+            PersonList pList = new PersonList();
+
+            foreach (PersonYield item in pList)
             {
-                RabbitMqMessage message = new RabbitMqMessage()
-                {
-                    Message = i + "号消息",
-                    IsOperationOk = false
-                };
-                RabbitMqContext.Instance.PublishMessage(message);
+                item.SayHi();
             }
-            RabbitMqContext.Instance.Dispose();
-            RabbitMqContext.Instance.Connect();
-            RabbitMqContext.Instance.ActionEventMessage += Instance_ActionEventMessage;
-            RabbitMqContext.Instance.Receive();
+            Console.ReadLine();
+            return;
+            Person[] peopleArray = new Person[3]
+          {
+                           new Person("John", "Smith"),
+              new Person("Jim", "Johnson"),
+              new Person("Sue", "Rabon"),
+          };
+
+
+
+            People peopleList = new People(peopleArray);
+            while (peopleList.GetEnumerator().MoveNext())
+            {
+
+            }
+            foreach (Person p in peopleList)
+                Console.WriteLine(p.firstName + " " + p.lastName);
+
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    RabbitMqMessage message = new RabbitMqMessage()
+            //    {
+            //        Message = i + "号消息",
+            //        IsOperationOk = false
+            //    };
+            //    RabbitMqContext.Instance.PublishMessage(message);
+            //}
+            //RabbitMqContext.Instance.Dispose();
+            //RabbitMqContext.Instance.Connect();
+            //RabbitMqContext.Instance.ActionEventMessage += Instance_ActionEventMessage;
+            //RabbitMqContext.Instance.Receive();
             Console.Read();
         }
 
